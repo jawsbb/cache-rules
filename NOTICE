@@ -1,0 +1,8 @@
+claude-audit
+Copyright (c) 2026 Jules Koehler
+
+This project bundles a Claude Code skill at skills/cache-rules/SKILL.md,
+which is derived from the original "cache-audit" skill by Sumant
+(https://github.com/ussumant/cache-audit). The skill was renamed from
+"cache-audit" to "cache-rules" in this project to disambiguate from the
+claude-audit CLI. The original skill is used here under the MIT License.

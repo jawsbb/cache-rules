@@ -1,11 +1,11 @@
 ---
-name: cache-audit
-description: Audit your Claude Code setup against prompt caching best practices. Checks ordering, tool stability, dynamic content handling, and hook injection patterns. Returns a scored report with specific fixes.
+name: cache-rules
+description: Check your Claude Code setup against the 6 prompt-caching rules. Audits ordering, tool stability, dynamic content handling, and hook injection patterns. Returns a scored report with specific fixes.
 ---
 
-# Prompt Cache Audit Skill
+# Cache Rules Skill
 
-**Trigger:** `/cache-audit` or "audit my caching" or "check my cache setup" or "am I breaking the cache?"
+**Trigger:** `/cache-rules` or "audit my caching" or "check my cache setup" or "am I breaking the cache?"
 
 **What it does:** Reads your live Claude Code configuration and checks it against the 6 prompt caching rules from Anthropic's engineering team. Returns a scored report with specific, actionable fixes.
 
