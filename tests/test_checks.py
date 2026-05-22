@@ -3,7 +3,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from cache_rules.checks.base import AuditContext, Severity
+from cache_rules.checks.registry import ALL_CHECKS
 from cache_rules.checks.rule4_models import ModelSwitchingCheck
+from cache_rules.checks.rule6_forks import ForkSafetyCheck
 from cache_rules.parser.transcripts import TranscriptTurn
 
 
@@ -12,15 +14,18 @@ def _turn(
     session_id: str = "s1",
     model: str = "claude-opus-4-7",
     is_sidechain: bool = False,
+    input_tokens: int = 0,
+    cache_creation_tokens: int = 0,
+    cache_read_tokens: int = 0,
 ) -> TranscriptTurn:
     return TranscriptTurn(
         timestamp=datetime(2026, 5, 21, 12, 0, 0, tzinfo=UTC),
         session_id=session_id,
         project_path="/p",
         model=model,
-        input_tokens=0,
-        cache_creation_tokens=0,
-        cache_read_tokens=0,
+        input_tokens=input_tokens,
+        cache_creation_tokens=cache_creation_tokens,
+        cache_read_tokens=cache_read_tokens,
         output_tokens=0,
         is_sidechain=is_sidechain,
     )
@@ -86,3 +91,24 @@ def test_rule4_ignores_sidechain_subagent_turns() -> None:
     result = ModelSwitchingCheck().run(AuditContext(turns=turns))
 
     assert result.severity is Severity.PASS
+
+
+def test_rule6_is_manual_and_reports_sidechain_evidence() -> None:
+    turns = [
+        _turn(is_sidechain=False, cache_read_tokens=900, input_tokens=100),
+        _turn(is_sidechain=True, cache_read_tokens=300, cache_creation_tokens=700),
+        _turn(is_sidechain=True, cache_read_tokens=100, cache_creation_tokens=900),
+    ]
+
+    result = ForkSafetyCheck().run(AuditContext(turns=turns))
+
+    assert result.rule_id == 6
+    assert result.severity is Severity.MANUAL
+    assert result.evidence["sidechain_turns"] == 2
+    # 400 cached reads / 2000 total input across the two sidechain turns
+    assert result.evidence["sidechain_hit_rate"] == 0.2
+
+
+def test_registry_lists_every_implemented_check() -> None:
+    rule_ids = sorted(check.rule_id for check in ALL_CHECKS)
+    assert rule_ids == [4, 6]

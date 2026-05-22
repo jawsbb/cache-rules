@@ -6,9 +6,15 @@ from datetime import UTC, datetime
 
 from rich.console import Console
 
+from cache_rules.checks.base import CheckResult, Severity
 from cache_rules.metrics.cost import cost_without_cache_usd, total_cost_usd
 from cache_rules.parser.transcripts import TranscriptTurn
-from cache_rules.report.renderer import build_cache_report, render_text, report_to_dict
+from cache_rules.report.renderer import (
+    build_cache_report,
+    render_check_results,
+    render_text,
+    report_to_dict,
+)
 
 NOW = datetime(2026, 5, 22, 12, 0, 0, tzinfo=UTC)
 
@@ -157,3 +163,20 @@ def test_render_text_handles_an_empty_window() -> None:
     report = build_cache_report([], window_days=7, project_filter=None, now=NOW)
 
     assert "No transcript turns" in _render(report)
+
+
+def test_render_check_results_shows_each_rule_with_its_verdict() -> None:
+    results = [
+        CheckResult(4, "Model switching", Severity.PASS, "No model switching detected."),
+        CheckResult(6, "Fork safety", Severity.MANUAL, "Review manually.", fix="reuse the prefix"),
+    ]
+    out = io.StringIO()
+
+    render_check_results(results, Console(file=out, width=100))
+    text = out.getvalue()
+
+    assert "Model switching" in text
+    assert "Fork safety" in text
+    assert "PASS" in text
+    assert "MANUAL" in text
+    assert "reuse the prefix" in text  # the fix is shown

@@ -70,3 +70,14 @@ def test_cache_command_json_output_is_parseable(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert payload["turn_count"] == 1
     assert payload["tokens"]["cache_read"] == 700
+
+
+def test_all_command_runs_the_rule_checks(tmp_path: Path) -> None:
+    projects = tmp_path / "projects"
+    _write_transcript(projects / "demo")
+
+    result = CliRunner().invoke(app, ["all", "--projects-dir", str(projects)])
+
+    assert result.exit_code == 0
+    assert "Model switching" in result.stdout
+    assert "Fork safety" in result.stdout

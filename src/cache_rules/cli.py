@@ -7,8 +7,15 @@ import typer
 from rich.console import Console
 
 from cache_rules import __version__
+from cache_rules.checks.base import AuditContext
+from cache_rules.checks.registry import ALL_CHECKS
 from cache_rules.parser.transcripts import find_transcript_files, parse_transcript
-from cache_rules.report.renderer import build_cache_report, render_text, report_to_dict
+from cache_rules.report.renderer import (
+    build_cache_report,
+    render_check_results,
+    render_text,
+    report_to_dict,
+)
 
 app = typer.Typer(
     name="cache-rules",
@@ -68,6 +75,25 @@ def cache(
         console.print_json(data=report_to_dict(report))
     else:
         render_text(report, console)
+
+
+@app.command(name="all")
+def audit(
+    projects_dir: Path | None = typer.Option(
+        None,
+        "--projects-dir",
+        help="Transcript directory to scan (default: ~/.claude/projects).",
+    ),
+) -> None:
+    """Run every cache rule check against your transcripts."""
+    turns = [
+        turn
+        for path in find_transcript_files(projects_dir)
+        for turn in parse_transcript(path)
+    ]
+    context = AuditContext(turns=turns)
+    results = [check.run(context) for check in ALL_CHECKS]
+    render_check_results(results, console)
 
 
 if __name__ == "__main__":

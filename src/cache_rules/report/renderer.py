@@ -8,11 +8,19 @@ from datetime import datetime, timedelta
 from rich.console import Console
 from rich.table import Table
 
+from cache_rules.checks.base import CheckResult, Severity
 from cache_rules.metrics.cache import cache_hit_rate
 from cache_rules.metrics.cost import cost_without_cache_usd, total_cost_usd
 from cache_rules.parser.transcripts import TranscriptTurn
 
 HIT_RATE_TARGET = 0.90
+
+_SEVERITY_STYLE = {
+    Severity.PASS: "green",
+    Severity.WARNING: "yellow",
+    Severity.FAIL: "red",
+    Severity.MANUAL: "cyan",
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -147,6 +155,21 @@ def render_text(report: CacheReport, console: Console) -> None:
                 f"${session.cost_usd:,.2f}",
             )
         console.print(table)
+
+
+def render_check_results(results: list[CheckResult], console: Console) -> None:
+    """Print rule check verdicts to the console."""
+    console.rule("cache-rules — rule audit")
+    for result in results:
+        style = _SEVERITY_STYLE[result.severity]
+        console.print(
+            f"[{style}]{result.severity.value.upper():<7}[/] "
+            f"Rule {result.rule_id} — {result.rule_name}"
+        )
+        console.print(f"        {result.message}")
+        if result.fix:
+            console.print(f"        [dim]fix:[/] {result.fix}")
+        console.print()
 
 
 def _worst_sessions(turns: list[TranscriptTurn], worst_n: int) -> list[SessionBreakdown]:
