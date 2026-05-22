@@ -44,6 +44,19 @@ See the [Roadmap](#roadmap) for what's coming in each phase.
 
 The bundled Claude Code skill works today. It reads your live config and scores it against the six prompt-cache rules.
 
+### Install as a plugin (recommended)
+
+This repo is also a Claude Code plugin marketplace. In Claude Code:
+
+```
+/plugin marketplace add jawsbb/cache-rules
+/plugin install cache-rules@cache-rules
+```
+
+Or in the VS Code extension: **Manage plugins → Add marketplace →** enter `https://github.com/jawsbb/cache-rules`, then install **cache-rules**.
+
+### Install the skill file directly
+
 ```bash
 # Global install (all projects)
 mkdir -p ~/.claude/skills/cache-rules

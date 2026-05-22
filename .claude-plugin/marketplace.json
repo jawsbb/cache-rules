@@ -1,0 +1,13 @@
+{
+  "name": "cache-rules",
+  "owner": {
+    "name": "Jules Koehler"
+  },
+  "plugins": [
+    {
+      "name": "cache-rules",
+      "source": ".",
+      "description": "Audit your Claude Code setup against the 6 prompt-caching rules. Returns a scored report with specific fixes."
+    }
+  ]
+}

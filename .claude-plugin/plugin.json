@@ -1,0 +1,8 @@
+{
+  "name": "cache-rules",
+  "description": "Audit your Claude Code setup against the 6 prompt-caching rules. Returns a scored report with specific fixes.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Jules Koehler"
+  }
+}
