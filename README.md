@@ -5,6 +5,7 @@
 **Measure your real Claude Code cache hit rate from the JSONL transcripts on your disk.**
 No proxy. No telemetry. No API call.
 
+[![test](https://github.com/jawsbb/cache-rules/actions/workflows/test.yml/badge.svg)](https://github.com/jawsbb/cache-rules/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-3776AB.svg)](https://www.python.org/downloads/)
 [![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)](#roadmap)
