@@ -62,6 +62,10 @@ select = [
     "SIM", # flake8-simplify
 ]
 
+[tool.ruff.lint.flake8-bugbear]
+# typer's CLI declaration idiom calls typer.Option/Argument in argument defaults.
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"

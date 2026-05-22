@@ -29,9 +29,11 @@ Everything runs locally. No data leaves your machine.
 
 ## Status
 
-This is **pre-alpha** — only `--version` and `--help` work today. The repository ships:
+**pre-alpha.** `cache-rules cache` measures your real cache hit rate, token usage, and
+cost from local transcripts today. The six-rule audit (Phase 2) is not built yet. The
+repository ships:
 
-1. A **Python CLI** (this project) that will compute your cache hit rate, cost, and configuration health.
+1. A **Python CLI** (this project) — the `cache` command works now; rule checks come next.
 2. A **bundled Claude Code skill** in [`skills/cache-rules/`](skills/cache-rules/) — the heuristic predecessor that scores your setup against the six prompt-cache rules. Install it today, get measured numbers tomorrow.
 
 See the [Roadmap](#roadmap) for what's coming in each phase.
@@ -64,24 +66,26 @@ or say `"audit my caching"`.
 
 ---
 
-## Quick start (CLI, pre-alpha)
+## Quick start (CLI)
 
 ```bash
 git clone https://github.com/jawsbb/cache-rules.git
 cd cache-rules
 uv sync
-uv run cache-rules --help
+uv run cache-rules cache          # 7-day hit rate report
 ```
 
-Once Phase 1 ships, you'll be able to:
+The `cache` command works today:
 
 ```bash
-uv tool install cache-rules
 cache-rules cache                 # 7-day hit rate report
 cache-rules cache --days 30       # custom window
-cache-rules cache --project foo   # filter by project
-cache-rules cache --json          # machine-readable
+cache-rules cache --project foo   # filter by project path
+cache-rules cache --json          # machine-readable output
 ```
+
+Reads the JSONL transcripts under `~/.claude/projects/` (override with `--projects-dir`).
+Once Phase 1 ships in full, `uv tool install cache-rules` will put it on your PATH.
 
 ---
 
