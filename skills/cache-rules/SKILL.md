@@ -41,7 +41,11 @@ Run all checks automatically. Do not ask for confirmation. Read the relevant fil
 
 ### Check 2 — Dynamic Updates via Messages (not System Prompt Edits)
 
-**Read:** All hook files listed under `SessionStart` and `UserPromptSubmit` in `~/.claude/settings.json`
+**Read:** Hook definitions from *every* source — hooks do not all live in `settings.json`:
+- `~/.claude/settings.json` and any project `.claude/settings.json` / `.claude/settings.local.json`
+- Plugin hooks: `~/.claude/plugins/**/hooks/hooks.json` — installed plugins register their own `SessionStart` / `UserPromptSubmit` hooks that never appear in `settings.json`
+
+Focus on `SessionStart` and `UserPromptSubmit` hooks.
 
 **What to look for:**
 - Hooks should output dynamic data as `additionalContext` in their JSON response (which becomes a `<system-reminder>` message) — not by modifying the system prompt
@@ -61,7 +65,7 @@ Run all checks automatically. Do not ask for confirmation. Read the relevant fil
 
 ### Check 3 — Tool Set Stability (No Add/Remove Mid-Session)
 
-**Read:** `~/.claude/settings.json`, `~/.claude/skills/*.md`, MCP server configurations
+**Read:** `~/.claude/settings.json`, skills under `~/.claude/skills/*/SKILL.md`, plugin skills under `~/.claude/plugins/`, and MCP server configurations (`~/.claude.json`, project `.mcp.json`)
 
 **What to look for:**
 - Tools should be identical at every turn of the conversation
@@ -101,9 +105,8 @@ Run all checks automatically. Do not ask for confirmation. Read the relevant fil
 
 **What to measure:**
 - Estimate the size of dynamic content injected per session/turn
-- Check the git status hook output — measure the typical size of the injected git diff/status
-- Check streak/quota hook output size
-- Check if granola meeting sync injects large content per turn
+- For each `SessionStart` / `UserPromptSubmit` hook found in Check 2, measure the typical size of what it injects
+- Common large injectors to watch for: git status/diff output, file-tree dumps, fetched API/meeting data, usage/quota summaries
 
 **Thresholds:**
 - < 2k chars injected per turn: ✅ PASS
@@ -111,7 +114,7 @@ Run all checks automatically. Do not ask for confirmation. Read the relevant fil
 - > 10k chars: ❌ FLAG — consider trimming
 
 **Known issue to flag:**
-- Git status with hundreds of untracked files (like the personalOS repo) can easily exceed 40k chars per session start. This is injected correctly via messages, but the raw token cost is high. Recommend: trim to branch name + changed file count + modified file list only.
+- A git status hook in a repo with hundreds of untracked files can easily exceed 40k chars per session start. This is injected correctly via messages, but the raw token cost is high. Recommend: trim to branch name + changed file count + modified file list only.
 
 **Suggested fix for large git status:**
 ```bash
